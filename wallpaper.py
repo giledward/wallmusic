@@ -65,13 +65,15 @@ class WallpaperSetter:
 
 class TextWallpaperBuilder:
     def __init__(self, settings: dict) -> None:
-        self._background = Path(settings.get("background_image", "wallpapers/background.jpg"))
+        background_image = settings.get("background_image", "wallpapers/background.jpg")
+        self._background = Path(background_image) if background_image else None
         self._output = Path(settings.get("output_image", ".generated/current_wallpaper.bmp"))
         self._font_path = settings.get("font_path")
         self._font_size = int(settings.get("font_size", 48))
         self._text_color = tuple(settings.get("text_color", [255, 255, 255]))
         self._shadow_color = tuple(settings.get("shadow_color", [0, 0, 0]))
         self._padding = int(settings.get("padding", 40))
+        self._background_color = tuple(settings.get("background_color", [0, 0, 0]))
 
     def build(self, track) -> Path:
         background = self._load_background()
@@ -102,17 +104,25 @@ class TextWallpaperBuilder:
         return self._output
 
     def _load_background(self) -> Image.Image:
-        if self._background.exists():
+        if self._background and self._background.exists():
             return Image.open(self._background).convert("RGB")
-        logging.warning("Background image not found: %s. Using solid color.", self._background)
-        return Image.new("RGB", (1920, 1080), (15, 15, 15))
+        if self._background:
+            logging.warning("Background image not found: %s. Using solid color.", self._background)
+        return Image.new("RGB", (1920, 1080), self._background_color)
 
     def _load_font(self) -> ImageFont.FreeTypeFont:
         if self._font_path:
             font_path = Path(self._font_path).expanduser()
             if font_path.exists():
-                return ImageFont.truetype(str(font_path), self._font_size)
-        return ImageFont.truetype("arial.ttf", self._font_size)
+                try:
+                    return ImageFont.truetype(str(font_path), self._font_size)
+                except OSError:
+                    logging.warning("Failed to load font at %s. Falling back to default.", font_path)
+        try:
+            return ImageFont.truetype("arial.ttf", self._font_size)
+        except OSError:
+            logging.warning("Arial font not found. Falling back to default font.")
+            return ImageFont.load_default()
 
     @staticmethod
     def _format_text(track) -> str:

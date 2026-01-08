@@ -33,7 +33,8 @@ Edit `config/settings.json` to pick a background image and customize the text ov
 
 ```json
 {
-  "background_image": "wallpapers/background.jpg",
+  "background_image": "",
+  "background_color": [0, 0, 0],
   "output_image": ".generated/current_wallpaper.bmp",
   "font_path": "",
   "font_size": 48,
@@ -44,6 +45,7 @@ Edit `config/settings.json` to pick a background image and customize the text ov
 ```
 
 - `background_image`: Base image to draw text on.
+- `background_color`: RGB background color when no image is provided.
 - `output_image`: Generated wallpaper file.
 - `font_path`: Optional path to a `.ttf` font file (leave empty to use Arial).
 - `font_size`: Font size in points.
