@@ -1,0 +1,10 @@
+{
+  "background_image": "",
+  "background_color": [0, 0, 0],
+  "output_image": ".generated/current_wallpaper.bmp",
+  "font_path": "",
+  "font_size": 48,
+  "text_color": [255, 255, 255],
+  "shadow_color": [0, 0, 0],
+  "padding": 40
+}
