@@ -1,0 +1,21 @@
+{
+  "default_wallpaper": "wallpapers/default.jpg",
+  "rules": [
+    {
+      "match": {"artist_contains": "Kanye"},
+      "wallpaper": "wallpapers/kanye.jpg"
+    },
+    {
+      "match": {"title_regex": ".*(night|midnight).*"},
+      "wallpaper": "wallpapers/night.jpg"
+    },
+    {
+      "match": {"album_contains": "Graduation"},
+      "wallpaper": "wallpapers/graduation.jpg"
+    },
+    {
+      "match": {"app_id_contains": "Spotify"},
+      "wallpaper": "wallpapers/spotify.jpg"
+    }
+  ]
+}

@@ -1,8 +1,7 @@
 # wallmusic
 
-Change the Windows desktop wallpaper by rendering the currently playing track name over a
-background image. It uses Windows Global System Media Transport Controls (GSMTC), so it
-works with Spotify or any app that reports to Windows media controls.
+Change the Windows desktop wallpaper based on the currently playing media track (Spotify
+or any other app reporting through Windows Global System Media Transport Controls).
 
 ## Requirements
 
@@ -27,31 +26,35 @@ python main.py --spotify-only --verbose
 The app runs in the background and updates the wallpaper when the active media track
 changes. Stop it with Ctrl+C.
 
-## Configuration
+## Rule configuration
 
-Edit `config/settings.json` to pick a background image and customize the text overlay:
+Rules live in `config/rules.json` and map track metadata to local image files:
 
 ```json
 {
-  "background_image": "",
-  "background_color": [0, 0, 0],
-  "output_image": ".generated/current_wallpaper.bmp",
-  "font_path": "",
-  "font_size": 48,
-  "text_color": [255, 255, 255],
-  "shadow_color": [0, 0, 0],
-  "padding": 40
+  "default_wallpaper": "wallpapers/default.jpg",
+  "rules": [
+    {"match": {"artist_contains": "Kanye"}, "wallpaper": "wallpapers/kanye.jpg"},
+    {"match": {"title_regex": ".*(night|midnight).*"}, "wallpaper": "wallpapers/night.jpg"},
+    {"match": {"album_contains": "Graduation"}, "wallpaper": "wallpapers/graduation.jpg"},
+    {"match": {"app_id_contains": "Spotify"}, "wallpaper": "wallpapers/spotify.jpg"}
+  ]
 }
 ```
 
-- `background_image`: Base image to draw text on.
-- `background_color`: RGB background color when no image is provided.
-- `output_image`: Generated wallpaper file.
-- `font_path`: Optional path to a `.ttf` font file (leave empty to use Arial).
-- `font_size`: Font size in points.
-- `text_color`: RGB text color.
-- `shadow_color`: RGB shadow color for legibility.
-- `padding`: Margin from the bottom-left corner.
+Supported match keys:
+
+- `artist_contains`
+- `title_contains`
+- `album_contains`
+- `title_regex`
+- `artist_regex`
+- `album_regex`
+- `app_id_contains`
+- Optional `priority` (higher wins, defaults to 0)
+
+The first rule after sorting by priority wins. If no rules match, the default wallpaper
+is used.
 
 ## Troubleshooting
 
@@ -59,4 +62,5 @@ Edit `config/settings.json` to pick a background image and customize the text ov
   player or make sure the app is actually playing (not paused).
 - **Wallpaper does not change:** Verify Windows allows wallpaper changes (Group Policy
   may block it) and that slideshow settings are disabled.
-- **Font not found:** Provide a `font_path` to a valid `.ttf` file if Arial is unavailable.
+- **PNG wallpaper fails:** The app will convert PNGs to BMP using Pillow when needed. If
+  conversion fails, use JPG/BMP files or ensure Pillow is installed.
